@@ -21,7 +21,8 @@ app.get('/', function(req, res) {
 
 var img_options = {
 	host: 'ajax.googleapis.com',
-	path: ''
+	path: '',
+  channel_name: ''
 };
 
 var img_path_const = '/ajax/services/search/images?v=1.0&q=';
@@ -42,41 +43,30 @@ img_cb = function(response) {
     //var ic = new iconv.Iconv('utf-8', 'utf-8')
     w = JSON.parse(str);
     console.log("--" + w.responseData["results"]);
-    /*
-    for (prop in w.responseData["results"]) {
-      e = w.responseData["results"][prop].url;
-      //e = utf8.encode(e);
-      if (typeof e != 'undefined')
-      {
-        console.log('wiktor_cb: ' + e);
-        console.log('-2-');
-        PostToSlack(e, "--", "imgbot");
-      } 
-      else
-      {
-        console.log("Query failed: ");
-        PostToSlack("Query failed", "--", "imgbot");
-      }
-    }
-    */
-    e = w.responseData["results"][0].url;
+
+    img_url = w.responseData["results"][0].url;
+    title = w.responseData["results"][0].titleNoFormatting;
+    originalContextUrl = w.responseData["results"][0].originalContextUrl;
+
     //e = utf8.encode(e);
-    if (typeof e != 'undefined')
+    if (typeof img_url != 'undefined')
     {
-      console.log('img_cb: ' + e);
-      console.log(w.responseData["results"][0].titleNoFormatting);
-      console.log(w.responseData["results"][0].originalContextUrl);
-      PostToSlack(e, "--", "imgbot");
-      PostToSlack(w.responseData["results"][0].titleNoFormatting, "--", "imgbot");
-      PostToSlack(w.responseData["results"][0].originalContextUrl, "--", "imgbot");
+      console.log('img_cb: ' + img_url);
+      console.log(title);
+      console.log(originalContextUrl);
+      PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
+      //PostToSlack(w.responseData["results"][0].titleNoFormatting, "img_bot", "picture_frame");
+      //PostToSlack(w.responseData["results"][0].originalContextUrl, "img_bot", "picture_frame");
+      PostToSlack(img_options.channel_name, "<" + originalContextUrl + "|" + title + ">", "img_bot", "picture_frame");
     } 
     else
     {
       console.log("Query failed: ");
-      PostToSlack("Query failed", "--", "imgbot");
+      PostToSlack(img_options.channel_name, "Query failed", "img_bot", "picture_frame");
     }  
     
     img_options.path = '';
+    img_options.channel_name = '';
   });
 }
 
@@ -88,6 +78,7 @@ app.post('/slackimg', function(req, res) {
 		user_name = parsed['user_name'];
 		text = parsed['text'];
 		timestamp = parsed['timestamp'];
+    channel_name = parsed['channel_name'];
 		date = new Date(parseInt(parsed['timestamp']) * 1000)
 
 		console.log('user ' + user_name + ' said ' 
@@ -101,6 +92,7 @@ app.post('/slackimg', function(req, res) {
 		img_entry = img_entry.replace(/ /g, '%20');
 		console.log('img_entry: ' + img_entry);
 		img_options.path = img_path_const + img_entry;
+    img_options.channel_name = channel_name;
 		https.request(img_options, img_cb).end();
 	})).pipe(res)
 })
@@ -120,7 +112,7 @@ if (typeof String.prototype.startsWith != 'function') {
   };
 }
 
-function PostToSlack(post_text, bot_name, bot_emoji) {
+function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
   // Build the post string from an object
 
     post_data = JSON.stringify(
@@ -133,11 +125,15 @@ function PostToSlack(post_text, bot_name, bot_emoji) {
 	//'", "icon_emoji" : "' + bot_emoji + '"}';
   
   console.log(post_text)
-  //#legible
-  //path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
 
-  //#testing
-  path_str = 'https://hooks.slack.com/services/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'; 
+  if (channel_name === "legible")
+  {
+    //#legible
+    path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
+  } else {
+    //#testing
+    path_str = 'https://hooks.slack.com/services/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'; 
+  }
   var post_options = {
       host: 'poundc.slack.com',
       port: '443',
