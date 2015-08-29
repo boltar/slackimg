@@ -12,7 +12,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
 
 app.get('/', function(req, res) {
-  res.send('Hello fool!');
+  res.send('Hello fool 2');
 });
 
 
@@ -63,12 +63,12 @@ img_cb = function(response) {
     //e = utf8.encode(e);
     if (typeof e != 'undefined')
     {
-      console.log('wiktor_cb: ' + e);
+      console.log('img_cb: ' + e);
       console.log(w.responseData["results"][0].titleNoFormatting);
       console.log(w.responseData["results"][0].originalContextUrl);
       PostToSlack(e, "--", "imgbot");
-      PostToSlack(w.responseData["results"][0].titleNoFormatting, "", "imgbot");
-      PostToSlack(w.responseData["results"][0].originalContextUrl, "", "imgbot")
+      PostToSlack(w.responseData["results"][0].titleNoFormatting, "--", "imgbot");
+      PostToSlack(w.responseData["results"][0].originalContextUrl, "--", "imgbot");
     } 
     else
     {
@@ -133,9 +133,11 @@ function PostToSlack(post_text, bot_name, bot_emoji) {
 	//'", "icon_emoji" : "' + bot_emoji + '"}';
   
   console.log(post_text)
+  //#legible
+  //path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
 
-  //path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; //#legible
-  path_str = 'https://hooks.slack.com/services/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'; //#testing
+  //#testing
+  path_str = 'https://hooks.slack.com/services/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'; 
   var post_options = {
       host: 'poundc.slack.com',
       port: '443',
