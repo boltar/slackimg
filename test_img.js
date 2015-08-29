@@ -18,7 +18,7 @@ post_data[0] = querystring.stringify({
       'user_name' : 'boltar',
       'timestamp': '1402359176.000029', //date.getTime(),
       'text' : '!img strawberry cake', 
-      'trigger_word': '!img'
+      'trigger_word': '!img1'
   });
 
 post_data[1] = querystring.stringify({
@@ -33,8 +33,8 @@ post_data[2] = querystring.stringify({
       'user_id' : 'U02A2NEUX',
       'user_name' : 'boltar',
       'timestamp': '1402359176.000029', //date.getTime(),
-      'text' : '!img super mario bros', // test img2
-      'trigger_word': '!img'
+      'text' : '!img3 super mario bros', // test img2
+      'trigger_word': '!img3'
   });
 
 var req = http.request(options, function(res) {

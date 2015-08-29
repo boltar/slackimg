@@ -44,11 +44,8 @@ img_cb = function(response) {
     //var ic = new iconv.Iconv('utf-8', 'utf-8')
     w = JSON.parse(str);
     console.log("--" + w.responseData["results"]);
-    img_index = 0;
-    if (img_options.trigger_word !== '!img' )
-    {
-      img_index = parseInt(img_options.trigger_word.charAt(4));
-    }
+    img_index = parseInt(img_options.trigger_word.charAt(4));
+    
     img_url             = w.responseData["results"][img_index].url;
     title               = w.responseData["results"][img_index].titleNoFormatting;
     originalContextUrl  = w.responseData["results"][img_index].originalContextUrl;
@@ -89,11 +86,7 @@ app.post('/slackimg', function(req, res) {
 		console.log('user ' + user_name + ' said ' 
 			+ text + ' at ' + date.toString());
 
-		if (text.startsWith('!img ')){
-			img_entry = text.slice('!img '.length, text.length);	
-		} else if (text.startsWith('!img')) { // mindful of the index in the trigger word
-      img_entry = text.slice('!img'.length+1, text.length);  // strip off the index
-    }
+    img_entry = text.slice('!img'.length+1, text.length);  // strip off the !img + index
 		
 		img_entry = img_entry.replace(/ /g, '%20');
 		console.log('img_entry: ' + img_entry);
