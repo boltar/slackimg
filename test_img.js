@@ -17,14 +17,24 @@ post_data[0] = querystring.stringify({
       'user_id' : 'U02A2NEUX',
       'user_name' : 'boltar',
       'timestamp': '1402359176.000029', //date.getTime(),
-      'text' : '!img strawberry cake' // test common names
+      'text' : '!img strawberry cake', 
+      'trigger_word': '!img'
   });
 
 post_data[1] = querystring.stringify({
       'user_id' : 'U02A2NEUX',
       'user_name' : 'boltar',
       'timestamp': '1402359176.000029', //date.getTime(),
-      'text' : '!img your mom' // test common names
+      'text' : '!img2 latte art', // test img2
+      'trigger_word': '!img2'
+  });
+
+post_data[2] = querystring.stringify({
+      'user_id' : 'U02A2NEUX',
+      'user_name' : 'boltar',
+      'timestamp': '1402359176.000029', //date.getTime(),
+      'text' : '!img super mario bros', // test img2
+      'trigger_word': '!img'
   });
 
 var req = http.request(options, function(res) {
@@ -38,8 +48,9 @@ req.on('error', function (e) {
 	console.log('problem with request: ' + e.message)
 })
 
-req.write(post_data[0])
+//req.write(post_data[0])
 //req.write(post_data[1])
+req.write(post_data[2])
 //req.write(post_data[4]) --> will fail due to caps
 
 req.end()

@@ -22,7 +22,8 @@ app.get('/', function(req, res) {
 var img_options = {
 	host: 'ajax.googleapis.com',
 	path: '',
-  channel_name: ''
+  channel_name: '',
+  trigger_word: ''
 };
 
 var img_path_const = '/ajax/services/search/images?v=1.0&q=';
@@ -39,14 +40,18 @@ img_cb = function(response) {
   //the whole response has been received, so we just print it out here
   response.on('end', function () {
     console.log('img_cb: ' + str);
-    console.log('-1-');
+    console.log('-------- end -------');
     //var ic = new iconv.Iconv('utf-8', 'utf-8')
     w = JSON.parse(str);
     console.log("--" + w.responseData["results"]);
-
-    img_url = w.responseData["results"][0].url;
-    title = w.responseData["results"][0].titleNoFormatting;
-    originalContextUrl = w.responseData["results"][0].originalContextUrl;
+    img_index = 0;
+    if (img_options.trigger_word !== '!img' )
+    {
+      img_index = parseInt(img_options.trigger_word.charAt(4));
+    }
+    img_url             = w.responseData["results"][img_index].url;
+    title               = w.responseData["results"][img_index].titleNoFormatting;
+    originalContextUrl  = w.responseData["results"][img_index].originalContextUrl;
 
     //e = utf8.encode(e);
     if (typeof img_url != 'undefined')
@@ -54,10 +59,8 @@ img_cb = function(response) {
       console.log('img_cb: ' + img_url);
       console.log(title);
       console.log(originalContextUrl);
-      PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
-      //PostToSlack(w.responseData["results"][0].titleNoFormatting, "img_bot", "picture_frame");
-      //PostToSlack(w.responseData["results"][0].originalContextUrl, "img_bot", "picture_frame");
-      PostToSlack(img_options.channel_name, "<" + originalContextUrl + "|" + title + ">", "img_bot", "picture_frame");
+      //PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
+      PostToSlack(img_options.channel_name, "<" + img_url + "|" + title + ">", "img_bot", "picture_frame");
     } 
     else
     {
@@ -67,6 +70,7 @@ img_cb = function(response) {
     
     img_options.path = '';
     img_options.channel_name = '';
+    img_options.trigger_word = '';
   });
 }
 
@@ -79,6 +83,7 @@ app.post('/slackimg', function(req, res) {
 		text = parsed['text'];
 		timestamp = parsed['timestamp'];
     channel_name = parsed['channel_name'];
+    trigger_word = parsed['trigger_word'];
 		date = new Date(parseInt(parsed['timestamp']) * 1000)
 
 		console.log('user ' + user_name + ' said ' 
@@ -86,13 +91,16 @@ app.post('/slackimg', function(req, res) {
 
 		if (text.startsWith('!img ')){
 			img_entry = text.slice('!img '.length, text.length);	
-		}
+		} else if (text.startsWith('!img')) { // mindful of the index in the trigger word
+      img_entry = text.slice('!img'.length+1, text.length);  // strip off the index
+    }
 		
-		//urban_entry = toTitleCase(wiki_entry);
 		img_entry = img_entry.replace(/ /g, '%20');
 		console.log('img_entry: ' + img_entry);
+    console.log('trigger_word: ' + trigger_word);
 		img_options.path = img_path_const + img_entry;
     img_options.channel_name = channel_name;
+    img_options.trigger_word = trigger_word;
 		https.request(img_options, img_cb).end();
 	})).pipe(res)
 })
