@@ -45,8 +45,10 @@ img_cb = function(response) {
     w = JSON.parse(str);
     console.log("--" + w.responseData["results"]);
     img_index = parseInt(img_options.trigger_word.charAt(4));
+    img_index--; // 0-based index
+    console.log('img_index: ') + img_index;
     
-    img_url             = w.responseData["results"][img_index].url;
+    img_url             = w.responseData["results"][img_index].unescapedUrl;
     title               = w.responseData["results"][img_index].titleNoFormatting;
     originalContextUrl  = w.responseData["results"][img_index].originalContextUrl;
 
@@ -86,7 +88,7 @@ app.post('/slackimg', function(req, res) {
 		console.log('user ' + user_name + ' said ' 
 			+ text + ' at ' + date.toString());
 
-    img_entry = text.slice('!img'.length+1, text.length);  // strip off the !img + index
+    img_entry = text.slice('!img'.length+2, text.length);  // strip off the !img + index + space
 		
 		img_entry = img_entry.replace(/ /g, '%20');
 		console.log('img_entry: ' + img_entry);
