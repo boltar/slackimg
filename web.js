@@ -128,15 +128,6 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
 	//'", "icon_emoji" : "' + bot_emoji + '"}';
   
   console.log(post_text)
-
-  if (channel_name === "legible")
-  {
-    //#legible
-    path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
-  } else {
-    //#testing
-    path_str = 'https://hooks.slack.com/services/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'; 
-  }
   var post_options = {
       host: 'poundc.slack.com',
       port: '443',
@@ -147,6 +138,28 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
           'Content-Length': Buffer.byteLength(post_data, 'utf8')
       }
   };
+
+  if (channel_name === "legible")
+  {
+    //#legible
+    path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
+  } else if (channel_name == football) {
+    //#football, stingtalk
+    path_str = 'https://hooks.slack.com/services/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';
+      post_options = {
+      host: 'stingtalk.slack.com',
+      port: '443',
+      path: path_str,
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(post_data, 'utf8')
+      }
+  };
+  } else if (channel_name == testing) {
+    //#testing
+    path_str = 'https://hooks.slack.com/services/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'; 
+  }
 
   // Set up the request
   var post_req = https.request(post_options, function(res) {
