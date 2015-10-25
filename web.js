@@ -134,6 +134,7 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
     //#legible
     path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
     host_str = 'poundc.slack.com';
+<<<<<<< HEAD
   } else if (channel_name == "football") {
     //#football, stingtalk
     path_str = 'https://hooks.slack.com/services/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';
