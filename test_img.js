@@ -50,9 +50,9 @@ req.on('error', function (e) {
 	console.log('problem with request: ' + e.message)
 })
 
-//req.write(post_data[0])
+req.write(post_data[0])
 //req.write(post_data[1])
-req.write(post_data[2])
+//req.write(post_data[2])
 //req.write(post_data[4]) --> will fail due to caps
 
 req.end()

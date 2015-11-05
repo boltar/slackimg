@@ -17,6 +17,7 @@ app.get('/', function(req, res) {
 
 
 var post_text ="";
+var g_res;
 
 // IMG STUFF 
 //https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=fuzzy%20monkey
@@ -61,16 +62,16 @@ img_cb = function(response) {
       console.log(title);
       console.log(originalContextUrl);
       //PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
-      // PostToSlackUsingResponse(
-      //   img_options.channel_name, "<" + img_url + "|" + title + ">", "img_bot", "picture_frame", response);
-      post_text = "<" + img_url + "|" + title + ">";
+      PostToSlackUsingResponse(
+        "<" + img_url + "|" + title + ">");
+      //post_text = "<" + img_url + "|" + title + ">";
     } 
     else
     {
       console.log("Query failed: ");
-      // PostToSlackUsingResponse(
-      //   img_options.channel_name, "Query failed", "img_bot", "picture_frame", response);
-      post_text = "Query failed";
+      PostToSlackUsingResponse(
+        "Query failed");
+      // post_text = "Query failed";
     }  
     
     img_options.path = '';
@@ -102,9 +103,9 @@ app.post('/slackimg', function(req, res) {
 		img_options.path = img_path_const + img_entry;
     img_options.channel_name = channel_name;
     img_options.trigger_word = trigger_word;
+    g_res = res;
 		https.request(img_options, img_cb).end();
 	})).pipe(res)
-  PostToSlackUsingResponse(post_text, res)
 })
 
 
@@ -175,7 +176,7 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
   post_req.end();
 }
 
-function PostToSlackUsingResponse(post_text, resp) {
+function PostToSlackUsingResponse(post_text) {
   // Build the post string from an object
 
     post_data = JSON.stringify(
@@ -185,43 +186,8 @@ function PostToSlackUsingResponse(post_text, resp) {
     })
 
   console.log(post_text)
+  console.log("PostToSlackUsingResponse: POST data: " + post_data);
 
-  // if (channel_name === "legible")
-  // {
-  //   //#legible
-  //   path_str = '/services/hooks/incoming-webhook?token=mcmbhcqQpfoU2THsofvad3VA'; 
-  //   host_str = 'poundc.slack.com';
-  // } else if (channel_name == "football") {
-  //   //#football, stingtalk
-  //   path_str = 'https://hooks.slack.com/services/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';
-  //   host_str = 'stingtalk.slack.com'
-  // } else if (channel_name == "testing") {
-  //   //#testing
-  //   path_str = 'https://hooks.slack.com/services/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'; 
-  //   host_str = 'poundc.slack.com'    
-  // }
-
-  // var post_options = {
-  //     host: host_str,
-  //     port: '443',
-  //     path: path_str,
-  //     method: 'POST',
-  //     headers: {
-  //         'Content-Type': 'application/json',
-  //         'Content-Length': Buffer.byteLength(post_data, 'utf8')
-  //     }
-  // };
-
-  // Set up the request
-  // var post_req = https.request(post_options, function(res) {
-  //     res.setEncoding('utf8');
-  //     res.on('data', function (chunk) {
-  //         console.log('Response: ' + chunk);
-  //     });
-  // });
-
-  console.log("PostToSlack: POST data: " + post_data);
-
-  resp.write(post_data);
-  resp.end();
+  g_res.write(post_data);
+  g_res.end();
 }
