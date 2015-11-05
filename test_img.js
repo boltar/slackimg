@@ -6,7 +6,9 @@ var options = {
 	hostname: 'localhost',
 	port: 5000,
 	path: '/slackimg',
-	method: 'POST'
+	method: 'POST',
+  path_str: 'https://hooks.slack.com/services/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',
+  host_str: 'poundc.slack.com'    
 }
 
 date = new Date()
