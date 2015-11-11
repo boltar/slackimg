@@ -62,15 +62,12 @@ img_cb = function(response) {
       console.log('img_cb: ' + img_url);
       console.log(title);
       console.log(originalContextUrl);
-      //PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
-      PostToSlackUsingResponse(
-        "<" + img_url + "|" + title + ">");
-      //post_text = "<" + img_url + "|" + title + ">";
+      PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
     } 
     else
     {
       console.log("Query failed: ");
-      PostToSlackUsingResponse(
+      PostToSlack(
         "Query failed");
       // post_text = "Query failed";
     }  
@@ -175,20 +172,4 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
 
   post_req.write(post_data);
   post_req.end();
-}
-
-function PostToSlackUsingResponse(post_text) {
-  // Build the post string from an object
-
-    post_data = JSON.stringify(
-    {"text" : post_text, 
-     "username" : "img_bot",
-     "icon_emoji" : "picture_frame"
-    })
-
-  console.log(post_text)
-  console.log("PostToSlackUsingResponse: POST data: " + post_data);
-
-  g_res.write(post_data);
-  g_res.end();
 }
