@@ -7,6 +7,7 @@ var https = require('https');
 var app = express();
 app.use(logfmt.requestLogger());
 var utf8 = require('utf8');
+var util = require('util');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
@@ -77,7 +78,7 @@ img_cb = function(response) {
 app.post('/slackimg', function(req, res) {
 	req.pipe(map(function (chunk) {
 		parsed = querystring.parse(chunk.toString())
-		console.log('app.post(/slackimg): ' + parsed)
+		console.log('app.post(/slackimg): ')
 		user_name = parsed['user_name'];
 		text = parsed['text'];
 		timestamp = parsed['timestamp'];
@@ -96,7 +97,9 @@ app.post('/slackimg', function(req, res) {
 		img_options.path = img_path_const + img_entry;
     img_options.channel_name = channel_name;
     img_options.trigger_word = trigger_word;
-		https.request(img_options, img_cb).end();
+    https.request(img_options, img_cb).end();	
+  console.log('req:' + util.inspect(req));
+  console.log('res:' + util.inspect(res));
 	})).pipe(res)
 })
 
@@ -138,7 +141,8 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
     //#football, stingtalk
     path_str = 'https://hooks.slack.com/services/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';
     host_str = 'stingtalk.slack.com'
-  } else if (channel_name == "testing") {
+  } else {
+    // we can technically not use this 2nd incoming webhook... leave it in for now
     //#testing
     path_str = 'https://hooks.slack.com/services/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'; 
     host_str = 'poundc.slack.com'    
