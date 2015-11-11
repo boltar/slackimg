@@ -17,6 +17,9 @@ app.get('/', function(req, res) {
 });
 
 
+var post_text ="";
+var g_res;
+
 // IMG STUFF 
 //https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=fuzzy%20monkey
 
@@ -60,12 +63,16 @@ img_cb = function(response) {
       console.log(title);
       console.log(originalContextUrl);
       //PostToSlack(img_options.channel_name, img_url, "img_bot", "picture_frame");
-      PostToSlack(img_options.channel_name, "<" + img_url + "|" + title + ">", "img_bot", "picture_frame");
+      PostToSlackUsingResponse(
+        "<" + img_url + "|" + title + ">");
+      //post_text = "<" + img_url + "|" + title + ">";
     } 
     else
     {
       console.log("Query failed: ");
-      PostToSlack(img_options.channel_name, "Query failed", "img_bot", "picture_frame");
+      PostToSlackUsingResponse(
+        "Query failed");
+      // post_text = "Query failed";
     }  
     
     img_options.path = '';
@@ -98,8 +105,6 @@ app.post('/slackimg', function(req, res) {
     img_options.channel_name = channel_name;
     img_options.trigger_word = trigger_word;
     https.request(img_options, img_cb).end();	
-  console.log('req:' + util.inspect(req));
-  console.log('res:' + util.inspect(res));
 	})).pipe(res)
 })
 
@@ -170,4 +175,20 @@ function PostToSlack(channel_name, post_text, bot_name, bot_emoji) {
 
   post_req.write(post_data);
   post_req.end();
+}
+
+function PostToSlackUsingResponse(post_text) {
+  // Build the post string from an object
+
+    post_data = JSON.stringify(
+    {"text" : post_text, 
+     "username" : "img_bot",
+     "icon_emoji" : "picture_frame"
+    })
+
+  console.log(post_text)
+  console.log("PostToSlackUsingResponse: POST data: " + post_data);
+
+  g_res.write(post_data);
+  g_res.end();
 }
